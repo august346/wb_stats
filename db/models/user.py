@@ -11,7 +11,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     email = Column(String, unique=True)
     password = Column(String, nullable=False)
-    disabled = Column(Boolean, default=False)
+    disabled = Column(Boolean, default=True)
 
     wb_api_keys = relationship(WbApiKey, backref="user", passive_deletes=True)
 

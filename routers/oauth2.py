@@ -6,7 +6,7 @@ from starlette import status
 
 import security
 from config import settings
-from db.dal import UserDAL
+from db.dal import UserDAL, EmailDuplicates
 from dependencies import get_user_dal
 
 router = APIRouter()
@@ -30,4 +30,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def signup(email: str, password: str, user_dal: UserDAL = Depends(get_user_dal)):
-    await user_dal.create_user(email, security.get_password_hash(password))
+    try:
+        await user_dal.create_user(email, security.get_password_hash(password))
+    except EmailDuplicates:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This email already exists")
