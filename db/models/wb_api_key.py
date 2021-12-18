@@ -9,14 +9,25 @@ class WbApiKey(Base):
     __tablename__ = "wb_api_key"
 
     id = Column(Integer, primary_key=True)
-    key = Column(String, nullable=False)
-    name = Column(String, nullable=False)
-
-    user_id = Column(ForeignKey("user.id", ondelete='CASCADE'))
+    key = Column(String, nullable=False, unique=True)
 
     sale_reports = relationship(SaleReport, backref="wb_api_key", passive_deletes=True)
 
     __mapper_args__ = {"eager_defaults": True}
+
+
+class UserWbApiKey(Base):
+    __tablename__ = "user_wb_api_key"
+
+    name = Column(String, nullable=False)
+
+    user_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
+    wb_api_key_id = Column(Integer, ForeignKey('wb_api_key.id', ondelete='RESTRICT'), primary_key=True)
+
+    user = relationship('User', uselist=False, backref='user_wb_api_keys')
+    wb_api_key = relationship('WbApiKey', uselist=False, backref='user_wb_api_keys')
+
+    __mapper_args__ = {"eager_defaults": True}
     __table_args__ = (
-        UniqueConstraint('name', 'user_id', name='name_user_is_wbapikey_unique'),
+        UniqueConstraint('user_id', 'wb_api_key_id'),
     )

@@ -14,8 +14,3 @@ async def get_me(current_user: User = Depends(get_current_active_user)):
         "email": current_user.email,
         "disabled": current_user.disabled,
     }
-
-
-@router.post("/users")
-async def create(email: str, password: str, user_dal: UserDAL = Depends(get_user_dal)):
-    return await user_dal.create(email, password)

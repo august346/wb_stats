@@ -5,7 +5,7 @@ engine = create_async_engine("postgresql+asyncpg://postgres:postgres@localhost/t
 
 
 def _get_session_maker(**kwargs):
-    return sessionmaker(engine, **kwargs)
+    return sessionmaker(engine, autoflush=False, **kwargs)
 
 
 AsyncSessionMaker = _get_session_maker(expire_on_commit=False, class_=AsyncSession)

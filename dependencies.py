@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException
 
 from db.config import AsyncSessionMaker
-from db.dal import UserDAL, WbApiKeyDAL
+from db.dal import UserDAL, UserWbApiKeyDAL
 from db.models.user import User
 from security import get_current_user
 
@@ -21,4 +21,4 @@ async def get_user_dal():
 async def get_wb_api_key_dal(current_user: User = Depends(get_current_active_user)):
     async with AsyncSessionMaker() as session:
         async with session.begin():
-            yield WbApiKeyDAL(session, current_user)
+            yield UserWbApiKeyDAL(session, current_user)
