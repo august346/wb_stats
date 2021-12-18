@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 
 from db.config import engine, Base
-from routers import user_router, oauth2
+from routers import user_router, oauth2, wb_api_key
 
 app = FastAPI()
 app.include_router(oauth2.router, prefix='/auth')
 app.include_router(user_router.router)
+app.include_router(wb_api_key.router, prefix='/api/wb_api_keys')
 
 
 @app.on_event("startup")

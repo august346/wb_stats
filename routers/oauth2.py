@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime
+from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
@@ -31,6 +31,6 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def signup(email: str, password: str, user_dal: UserDAL = Depends(get_user_dal)):
     try:
-        await user_dal.create_user(email, security.get_password_hash(password))
+        await user_dal.create(email, security.get_password_hash(password))
     except EmailDuplicates:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This email already exists")

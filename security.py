@@ -37,7 +37,7 @@ def verify_password(plain_password, hashed_password):
 async def get_user(username: str) -> Optional[User]:
     async with AsyncSessionMaker() as session:
         async with session.begin():
-            return await UserDAL(session).get_user(username)
+            return await UserDAL(session).get(username)
 
 
 async def authenticate_user(username: str, password: str) -> Optional[User]:
