@@ -3,11 +3,15 @@
 #### gateway
 - [ ] user me auth only
 - [ ] wb_layer implement
-- [ ] api keys inited flag
-- [ ] endpoint for set inited
+  - [x] init
+  - [ ] create report
+  - [ ] get report
+- ~~validate api_key~~ (no add invalid)
+  - ~~api keys inited flag~~ (no add invalid)
+  - ~~endpoint for set inited~~ (no add invalid)
 
 
 #### wb_layer
 - [ ] post report
 - [ ] get report
-- [ ] notify getaway inited
+- ~~notify api key first collect inited~~ (return 400 for invalid api key)
