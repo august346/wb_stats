@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from db.config import Base
-from db.models.sale_report import SaleReport
 
 
 class WbApiKey(Base):
@@ -10,8 +9,6 @@ class WbApiKey(Base):
 
     id = Column(Integer, primary_key=True)
     key = Column(String, nullable=False, unique=True)
-
-    sale_reports = relationship(SaleReport, backref="wb_api_key", passive_deletes=True)
 
     __mapper_args__ = {"eager_defaults": True}
 

@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from db.dal import UserDAL
 from db.models.user import User
-from dependencies import get_user_dal, get_current_active_user
+from dependencies import get_current_active_user
 
 router = APIRouter()
 

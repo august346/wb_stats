@@ -1,7 +1,7 @@
 from sqlalchemy import Column, BigInteger, DateTime, Integer, String, Float, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
 
-from db.config import Base
+from ..config import Base
 
 
 class SaleReport(Base):
@@ -23,7 +23,6 @@ class SaleReport(Base):
 
     api_version = Column(Integer)
     document = Column(JSONB)    # *
-
-    wb_api_key_id = Column(ForeignKey("wb_api_key.id", ondelete='CASCADE'))
+    api_key = Column(String)
 
     __mapper_args__ = {"eager_defaults": True}

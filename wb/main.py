@@ -1,12 +1,10 @@
 from fastapi import FastAPI
 
+from routers.router import router
 from db.config import engine, Base
-from routers import user_router, oauth2, wb_api_key
 
 app = FastAPI()
-app.include_router(oauth2.router, prefix='/auth')
-app.include_router(user_router.router)
-app.include_router(wb_api_key.router, prefix='/api/wb_api_keys')
+app.include_router(router)
 
 
 @app.on_event("startup")
@@ -18,10 +16,10 @@ async def startup():
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"service": "parse"}
 
 
 if __name__ == '__main__':
     import uvicorn
 
-    uvicorn.run("main:app", port=1111, host='127.0.0.1')
+    uvicorn.run("main:app", port=1112, host='127.0.0.1')

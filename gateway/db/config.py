@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-engine = create_async_engine("postgresql+asyncpg://postgres:postgres@localhost/test", echo=True)
+engine = create_async_engine("postgresql+asyncpg://postgres:postgres@localhost/api_gateway", echo=True)
 
 
 def _get_session_maker(**kwargs):
