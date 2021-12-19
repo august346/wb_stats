@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 
@@ -29,7 +29,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
-async def signup(email: str, password: str, user_dal: UserDAL = Depends(get_user_dal)):
+async def signup(email: str = Body(...), password: str = Body(...), user_dal: UserDAL = Depends(get_user_dal)):
     try:
         return await user_dal.create(email, security.get_password_hash(password))
     except UserDuplicates:

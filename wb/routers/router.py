@@ -2,7 +2,7 @@ import uuid
 from datetime import date, datetime
 
 from dateutil.relativedelta import relativedelta
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Body
 
 from db.dal import SaleReportDAL
 from dependencies import get_init_sale_reports_getter, get_sale_report_dal
@@ -14,7 +14,6 @@ router = APIRouter()
 
 @router.post("/init", status_code=status.HTTP_202_ACCEPTED)
 async def init(
-    api_key: str,
     background_tasks: BackgroundTasks,
     init_getter: SaleReportGetter = Depends(get_init_sale_reports_getter),
 ):
@@ -27,7 +26,7 @@ async def init(
     today: date = datetime.utcnow().date()
     three_months_ago: date = today - relativedelta(months=3)
 
-    background_tasks.add_task(tasks.collect_rows, api_key, three_months_ago, today)
+    background_tasks.add_task(tasks.collect_rows, init_getter.key, three_months_ago, today)
 
 
 @router.post("/exists")

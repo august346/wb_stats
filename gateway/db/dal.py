@@ -123,7 +123,7 @@ class BaseWithUserDal(BaseDAL):
 
 
 class UserWbApiKeyDAL(BaseWithUserDal):
-    async def _assert_not_exist(self, key: str):
+    async def assert_not_exist(self, key: str):
         if await self._first(
                 select(func.count()).filter(
                     UserWbApiKey.user_id == self.user_id,
@@ -152,7 +152,7 @@ class UserWbApiKeyDAL(BaseWithUserDal):
         return wb_api_key
 
     async def create(self, name: str, key: str) -> WbApiKey:
-        await self._assert_not_exist(key)
+        await self.assert_not_exist(key)
 
         wb_api_key = await self._get_or_create_wb_api_key(key)
         new_user_wb_api_key = UserWbApiKey(user_id=self.user_id, wb_api_key_id=wb_api_key.id, name=name)

@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int
+    url_wb_service: str = "http://localhost:1112"
+    path_wb_service_init: str = "/init"
 
     class Config:
         env_file = ".env"
