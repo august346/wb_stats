@@ -32,30 +32,31 @@ map_v1 = {
     "for_pay": _v1_API_KEY_FOR_PAY,
     "reward": "ppvz_reward",
 }
-map_versions = [map_v0, map_v1]
+map_versions = {
+    1: map_v1,
+    0: map_v0
+}
 
 
 class Transformer:
     @classmethod
     def transform(cls, data: dict, api_key: str) -> dict:
-        defaults = cls._get_mapped(data, map_default)
+        defaults = dict(api_version=None, document=data, api_key=api_key)
 
-        for ind, map_v in enumerate(map_versions):
+        for ver, map_v in map_versions.items():
             try:
-                versioned = cls._get_mapped(data, map_v)
-                break
-            except KeyError as e:
-                logging.warning(e)
+                versioned = cls._get_mapped(data, map_default | map_v)
+                versioned["created"] = (
+                    (created := versioned["created"])
+                    and datetime.strptime(created, "%Y-%m-%dT%H:%M:%SZ")
+                )
+                return defaults | versioned | dict(api_version=ver)
+            except KeyError:
                 continue
-        else:
-            raise KeyError(f"new api versions:\n{data}")
 
-        if defaults["created"]:
-            defaults["created"] = datetime.strptime(
-                defaults["created"], "%Y-%m-%dT%H:%M:%SZ"
-            )
+        logging.error("New WB API version")
 
-        return defaults | versioned | dict(api_version=ind, document=data, api_key=api_key)
+        return defaults
 
     @classmethod
     def _get_mapped(cls, data: dict, map_v: dict) -> dict:
