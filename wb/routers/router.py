@@ -41,6 +41,6 @@ async def new_report(api_key: str, date_from: date, date_to: date, background_ta
     return report_id
 
 
-@router.get("/report/{report_id}")
-async def get_report(report_id: str):
-    ...
+@router.get("/grouped")
+async def get_report(api_key: str, date_from: date, date_to: date, sale_report_dal: SaleReportDAL = Depends(get_sale_report_dal)):
+    return await sale_report_dal.get_grouped(api_key, date_from, date_to)

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from functools import wraps
 from typing import Optional
 
@@ -42,7 +42,7 @@ class BaseDAL:
 
     async def _all(self, sel: Select):
         q = await self.db_session.execute(sel)
-        return q.scalars().fetchall()
+        return q.fetchall()
 
     @raise_not_found
     async def _first(self, sel: Select) -> Base:
@@ -108,10 +108,34 @@ class SaleReportDAL(BaseDAL):
         await self.db_session.commit()
         return 1
 
-    async def get_many(self, api_key: str, date_from: datetime, date_to: datetime) -> list[SaleReport]:
+    async def get_many(self, api_key: str, date_from: date, date_to: date) -> list[SaleReport]:
         return await self._all(
             select(SaleReport).filter(
                 SaleReport.api_key == api_key,
                 date_from <= SaleReport.created < date_to,
+            )
+        )
+
+    async def get_grouped(self, api_key: str, date_from: date, date_to: date):
+        group_cols = (
+            SaleReport.wb_id,
+            SaleReport.brand,
+            SaleReport.name,
+            SaleReport.barcode,
+            SaleReport.type,
+            SaleReport.operation
+        )
+
+        return await self._all(
+            select(
+                *group_cols,
+                func.count().label("count"),
+                func.sum(SaleReport.for_pay).label("for_pay"),
+                func.sum(SaleReport.delivery).label("delivery"),
+            ).filter(
+                SaleReport.api_key == api_key,
+                SaleReport.created.between(date_from, date_to)
+            ).group_by(
+                *group_cols
             )
         )
