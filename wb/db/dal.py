@@ -1,16 +1,18 @@
 from datetime import date
-from functools import wraps
-from typing import Optional
+from functools import wraps, cached_property
+from typing import Optional, Iterable
 
 from fastapi import HTTPException
-from sqlalchemy import func
+from sqlalchemy import func, Column
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import Select
+from sqlalchemy.sql.functions import Function
 from starlette import status
 
+from utils.transformer import API_OPERATIONS_SALE_REFUND_DELIVERY_FINE
 from .config import Base
 from .models.sale_report import SaleReport
 
@@ -117,25 +119,40 @@ class SaleReportDAL(BaseDAL):
         )
 
     async def get_grouped(self, api_key: str, date_from: date, date_to: date):
-        group_cols = (
-            SaleReport.wb_id,
-            SaleReport.brand,
-            SaleReport.name,
-            SaleReport.barcode,
-            SaleReport.type,
-            SaleReport.operation
-        )
-
         return await self._all(
             select(
-                *group_cols,
-                func.count().label("count"),
-                func.sum(SaleReport.for_pay).label("for_pay"),
-                func.sum(SaleReport.delivery).label("delivery"),
+                *self._group_fields,
+                *self._group_aggregate_funcs
             ).filter(
                 SaleReport.api_key == api_key,
                 SaleReport.created.between(date_from, date_to)
             ).group_by(
-                *group_cols
+                *self._group_fields
+            ).order_by(*self._group_fields)
+        )
+
+    @cached_property
+    def _group_fields(self) -> list[Column]:
+        return [
+            SaleReport.wb_id,
+            SaleReport.brand,
+            SaleReport.name,
+            SaleReport.barcode
+        ]
+
+    @property
+    def _group_aggregate_funcs(self) -> Iterable[Function]:
+        operations = zip(
+            ("sale", "refund", "delivery", "fine"),
+            zip(
+                API_OPERATIONS_SALE_REFUND_DELIVERY_FINE,
+                SaleReport.get_fields_sale_refund_delivery_fine()
             )
         )
+
+        for name, (operation, field) in operations:
+            f = SaleReport.operation == operation
+            yield func.count(1).filter(f).label(f"count_{name}")
+            yield func.coalesce(
+                func.sum(field).filter(f), 0
+            ).label(f"sum_{name}")
