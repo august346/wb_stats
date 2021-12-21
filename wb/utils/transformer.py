@@ -1,6 +1,8 @@
 import logging
+from collections import defaultdict
 from datetime import datetime
-from typing import Any
+from decimal import Decimal
+from typing import Any, Iterable
 
 _v0_API_KEY_FOR_PAY = "for_pay"
 _v1_API_KEY_FOR_PAY = "ppvz_for_pay"
@@ -84,3 +86,28 @@ class Transformer:
                 if data[_API_KEY_OPERATION] in _API_OPERATIONS_WITHOUT_PAY:
                     return None
             raise e
+
+
+def add_sums(brands: list[str], rows: Iterable[dict]):
+    total_sum = defaultdict(Decimal)
+    sums_brands = defaultdict(lambda: defaultdict(Decimal))
+
+    for r in rows:
+        brand = r["brand"]
+
+        for t in ("sale", "refund", "delivery", "fine"):
+            for f in ("sum", "count"):
+                field_key = f"{f}_{t}"
+                field_value = r[field_key]
+
+                total_sum[field_key] += field_value
+                if brand in brands:
+                    sums_brands[brand][field_key] += field_value
+
+        yield r
+
+    for brand, sums in sums_brands.items():
+        yield sums | dict(brand=brand)
+
+    yield total_sum | dict(brand="__all__")
+

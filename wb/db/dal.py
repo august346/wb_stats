@@ -12,9 +12,9 @@ from sqlalchemy.sql import Select
 from sqlalchemy.sql.functions import Function
 from starlette import status
 
+from db.config import Base
+from db.models.sale_report import SaleReport
 from utils.transformer import API_OPERATIONS_SALE_REFUND_DELIVERY_FINE
-from .config import Base
-from .models.sale_report import SaleReport
 
 
 class NotFound(HTTPException):

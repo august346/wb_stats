@@ -12,10 +12,11 @@
 
 
 #### wb_layer
-- [ ] post report
+- [x] post report
   - [x] aggregation
-  - [ ] merge storage
-  - [ ] return *.xlsx
+  - [x] merge storage
+  - [x] return ~~*.xlsx~~ *.csv
+- [ ] refactor post report
 - ~~get report~~ (without background task)
 - ~~notify api key first collect inited~~ (return 400 for invalid api key)
-- [ ] check exists row_ids while parse (without useless work)
+- [ ] ??? check exists row_ids while parse (without useless work)

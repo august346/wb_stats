@@ -1,12 +1,18 @@
+import csv
+import io
 from datetime import date, datetime
 
 from dateutil.relativedelta import relativedelta
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Body
+from starlette.responses import StreamingResponse
 
 from db.dal import SaleReportDAL
 from dependencies import get_init_sale_reports_getter, get_sale_report_dal
 from parse.api import SaleReportGetter
 from tasks import tasks
+from utils import utils
+from utils.collector import add_stock_balances
+from utils.transformer import add_sums
 
 router = APIRouter()
 
@@ -18,8 +24,8 @@ not_found_exc = HTTPException(
 
 @router.post("/init", status_code=status.HTTP_202_ACCEPTED)
 async def init(
-    background_tasks: BackgroundTasks,
-    init_getter: SaleReportGetter = Depends(get_init_sale_reports_getter),
+        background_tasks: BackgroundTasks,
+        init_getter: SaleReportGetter = Depends(get_init_sale_reports_getter),
 ):
     if not (await init_getter.is_api_key_valid()):
         raise HTTPException(
@@ -38,15 +44,16 @@ async def exists(api_keys: list[str] = Body(...), sale_report_dal: SaleReportDAL
     return await sale_report_dal.exist_many(api_keys)
 
 
-@router.post("/grouped")
-async def get_report(
+@router.post("/report")
+async def report(
     api_key: str = Body(...),
     date_from: date = Body(...),
     date_to: date = Body(...),
+    brands: list[str] = Body(default=[]),
     sale_report_dal: SaleReportDAL = Depends(get_sale_report_dal)
 ):
     now: datetime = datetime.utcnow()
-    date_from_dt, date_to_dt = map(as_dt, (date_from, date_to))
+    date_from_dt, date_to_dt = map(utils.as_dt, (date_from, date_to))
 
     if date_from_dt > now:
         raise not_found_exc
@@ -60,8 +67,27 @@ async def get_report(
     if min_created > date_from_dt or max_created < min(date_from_dt, now):
         await tasks.async_collect_rows(api_key, date_from, date_to)
 
-    return await sale_report_dal.get_grouped(api_key, date_from, date_to)
+    sale_report_rows = await sale_report_dal.get_grouped(api_key, date_from, date_to)
+    if not sale_report_rows:
+        raise not_found_exc
 
+    sale_report_dicts = map(dict, sale_report_rows)
+    sale_reports_with_stock_balances = [d async for d in add_stock_balances(api_key, sale_report_dicts)]
+    sale_reports_final = list(add_sums(brands, sale_reports_with_stock_balances))
 
-def as_dt(d: date) -> datetime:
-    return datetime.combine(d, datetime.min.time())
+    buff = io.StringIO()
+    writer = csv.DictWriter(buff, fieldnames=sale_reports_final[0].keys())
+    writer.writeheader()
+    list(map(writer.writerow, sale_reports_final))
+    buff.seek(0)
+
+    response = StreamingResponse(
+        iter([buff.getvalue()]),
+        media_type="text/csv"
+    )
+    vanilla_date_to = date_to - relativedelta(days=1)
+    filename = f"{date_from.isoformat()}...{vanilla_date_to.isoformat()}"
+
+    response.headers["Content-Disposition"] = f"attachment; filename={filename}.csv"
+
+    return response

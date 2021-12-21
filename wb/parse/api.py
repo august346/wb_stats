@@ -77,7 +77,7 @@ class SaleReportGetter:
         return False
 
 
-async def get_storage(key: str) -> list[dict]:
+async def get_storage(key: str) -> dict[str, dict]:
     if cached := await redis.Storage.get(key):
         return cached
 
@@ -90,9 +90,10 @@ async def get_storage(key: str) -> list[dict]:
                 if resp.status != http.HTTPStatus.OK:
                     await asyncio.sleep(0.3)
                 else:
-                    data: list[dict] = await resp.json()
+                    rows: list[dict] = await resp.json()
+                    data = {r["nmId"]: r for r in rows}
                     if data:
                         await redis.Storage.set(key, data)
                         return data
                     else:
-                        return []
+                        return {}
