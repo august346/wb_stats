@@ -139,17 +139,20 @@ class UserWbApiKeyDAL(BaseWithUserDal):
         )
 
     async def get(self, wb_api_key_id: int) -> WbApiKey:
-        wb_api_key: UserWbApiKey = await self._first(
+        return await self._first(
             select(UserWbApiKey).filter(
                 UserWbApiKey.user_id == self.user_id,
                 UserWbApiKey.wb_api_key.has(id=wb_api_key_id),
             )
         )
 
-        if not wb_api_key:
-            raise NotFound
-
-        return wb_api_key
+    async def get_key(self, wb_api_key_id: int) -> str:
+        return await self._first(
+            select(WbApiKey.key).filter(
+                UserWbApiKey.user_id == self.user_id,
+                UserWbApiKey.wb_api_key.has(id=wb_api_key_id)
+            )
+        )
 
     async def create(self, name: str, key: str) -> WbApiKey:
         await self.assert_not_exist(key)

@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int
     url_wb_service: str = "http://localhost:1112"
     path_wb_service_init: str = "/init"
+    path_wb_service_report: str = "/report"
 
     class Config:
         env_file = ".env"

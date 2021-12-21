@@ -1,3 +1,5 @@
+from datetime import date
+
 from fastapi import APIRouter, Depends, HTTPException, Body
 from starlette import status
 
@@ -49,3 +51,21 @@ async def create(
 @router.get("/")
 async def get_list(wak_dal: UserWbApiKeyDAL = Depends(get_user_wb_api_key_dal)) -> list[UserWbApiKey]:
     return await wak_dal.list()
+
+
+@router.post("/{wak_id}/report")
+async def report(
+    wak_id: int,
+    date_from: date = Body(...),
+    date_to: date = Body(...),
+    brands: list[str] = Body(default=[]),
+    wb_service: WbService = Depends(get_wb_service),
+    wak_dal: UserWbApiKeyDAL = Depends(get_user_wb_api_key_dal)
+):
+    async for rsp in wb_service.get_report(
+        key=await wak_dal.get_key(wak_id),
+        date_from=date_from,
+        date_to=date_to,
+        brands=brands
+    ):
+        return rsp
