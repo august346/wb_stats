@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from functools import wraps, cached_property
 from typing import Optional, Iterable
 
@@ -84,8 +84,22 @@ class SaleReportDAL(BaseDAL):
             for expected in api_keys
         }
 
-    async def exist(self, api_key: str) -> bool:
-        return (await self.exist_many([api_key]))[api_key]
+    async def get_max_min_created(self, api_key: str) -> tuple[Optional[datetime], Optional[datetime]]:
+        rows = await self._all(
+            select(
+                func.min(SaleReport.created),
+                func.max(SaleReport.created),
+            ).filter(
+                SaleReport.api_key == api_key
+            ).group_by(
+                SaleReport.api_key
+            )
+        )
+
+        for row in rows:
+            return row
+
+        return None, None
 
     async def get_max_row_id(self, api_key: str) -> int:
         max_row_id: Optional[int] = await self._first(

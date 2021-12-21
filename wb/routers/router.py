@@ -1,4 +1,3 @@
-import uuid
 from datetime import date, datetime
 
 from dateutil.relativedelta import relativedelta
@@ -10,6 +9,11 @@ from parse.api import SaleReportGetter
 from tasks import tasks
 
 router = APIRouter()
+
+not_found_exc = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="Item not found",
+)
 
 
 @router.post("/init", status_code=status.HTTP_202_ACCEPTED)
@@ -30,17 +34,34 @@ async def init(
 
 
 @router.post("/exists")
-async def exists(api_keys: list[str], sale_report_dal: SaleReportDAL = Depends(get_sale_report_dal)):
+async def exists(api_keys: list[str] = Body(...), sale_report_dal: SaleReportDAL = Depends(get_sale_report_dal)):
     return await sale_report_dal.exist_many(api_keys)
 
 
-@router.post("/report", status_code=status.HTTP_200_OK)
-async def new_report(api_key: str, date_from: date, date_to: date, background_tasks: BackgroundTasks) -> str:
-    report_id: str = str(uuid.uuid4())
-    background_tasks.add_task(tasks.create_report, api_key, date_from, date_to)
-    return report_id
+@router.post("/grouped")
+async def get_report(
+    api_key: str = Body(...),
+    date_from: date = Body(...),
+    date_to: date = Body(...),
+    sale_report_dal: SaleReportDAL = Depends(get_sale_report_dal)
+):
+    now: datetime = datetime.utcnow()
+    date_from_dt, date_to_dt = map(as_dt, (date_from, date_to))
 
+    if date_from_dt > now:
+        raise not_found_exc
 
-@router.get("/grouped")
-async def get_report(api_key: str, date_from: date, date_to: date, sale_report_dal: SaleReportDAL = Depends(get_sale_report_dal)):
+    min_created, max_created = await sale_report_dal.get_max_min_created(api_key)
+
+    if any(x is None for x in (min_created, max_created)):
+        raise not_found_exc
+
+    now: datetime = datetime.utcnow()
+    if min_created > date_from_dt or max_created < min(date_from_dt, now):
+        await tasks.async_collect_rows(api_key, date_from, date_to)
+
     return await sale_report_dal.get_grouped(api_key, date_from, date_to)
+
+
+def as_dt(d: date) -> datetime:
+    return datetime.combine(d, datetime.min.time())

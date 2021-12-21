@@ -10,7 +10,8 @@ from parse.api import SaleReportGetter
 from utils.collector import Collector
 
 
-async def _a_collect_rows(api_key: str, date_from: date, date_to: date):
+# TODO check exists row_ids
+async def async_collect_rows(api_key: str, date_from: date, date_to: date):
     async with aiohttp.ClientSession(base_url=settings.wb_base_url) as http_session:
         sri = SaleReportGetter(
             key=api_key,
@@ -29,9 +30,5 @@ async def _a_collect_rows(api_key: str, date_from: date, date_to: date):
 
 def collect_rows(api_key: str, date_from: date, date_to: date):
     new_loop = asyncio.new_event_loop()
-    new_loop.run_until_complete(_a_collect_rows(api_key, date_from, date_to))
+    new_loop.run_until_complete(async_collect_rows(api_key, date_from, date_to))
     new_loop.close()
-
-
-def create_report(api_key: str, date_from: date, date_to: date):
-    ...

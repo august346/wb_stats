@@ -1,7 +1,4 @@
-import logging
-
 from aiohttp import ClientSession, ClientResponse
-from fastapi import HTTPException
 from starlette import status
 
 from config import settings
