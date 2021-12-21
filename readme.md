@@ -2,9 +2,9 @@
 
 #### gateway
 - [ ] user me auth only
-- [ ] wb_layer implement
+- [x] wb_layer implement
   - [x] init
-  - [ ] create report
+  - [x] create report
   - ~~get report~~ (without background task)
 - ~~validate api_key~~ (no add invalid)
   - ~~api keys inited flag~~ (no add invalid)
