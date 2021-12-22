@@ -1,7 +1,7 @@
 ### TODO
 
 #### gateway
-- [ ] user me auth only
+- [x] user me auth only
 - [x] wb_layer implement
   - [x] init
   - [x] create report
@@ -20,3 +20,15 @@
 - ~~get report~~ (without background task)
 - ~~notify api key first collect inited~~ (return 400 for invalid api key)
 - [ ] ??? check exists row_ids while parse (without useless work)
+
+
+#### front-end
+- [ ] homepage
+- [ ] auth
+- [ ] api-keys
+  - [ ] c
+  - [ ] r
+  - [ ] u
+  - [ ] d
+  - [ ] list
+- [ ] generate report

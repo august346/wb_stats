@@ -2,8 +2,10 @@ from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Body
 from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import EmailStr
 from starlette import status
 
+import base_models
 import security
 from config import settings
 from db.dal import UserDAL, UserDuplicates
@@ -28,8 +30,12 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/signup", status_code=status.HTTP_201_CREATED)
-async def signup(email: str = Body(...), password: str = Body(...), user_dal: UserDAL = Depends(get_user_dal)):
+@router.post("/signup", status_code=status.HTTP_201_CREATED, response_model=base_models.User)
+async def signup(
+    email: EmailStr = Body(...),
+    password: str = Body(..., regex=r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$'),
+    user_dal: UserDAL = Depends(get_user_dal)
+):
     try:
         return await user_dal.create(email, security.get_password_hash(password))
     except UserDuplicates:
