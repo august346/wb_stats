@@ -1,12 +1,11 @@
 import json
-import os
 from typing import Any, Optional
 
 import aioredis
 
-REDIS_URL: str = os.environ.get("REDIS_URL", "redis://localhost")
+from config import settings
 
-_redis = aioredis.from_url(REDIS_URL)
+_redis = aioredis.from_url(settings.redis)
 
 
 async def _set_value(key: str, value: Any, ex: int):

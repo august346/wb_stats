@@ -4,4 +4,4 @@
 .idea/
 venv/
 
-.env
+*.env
