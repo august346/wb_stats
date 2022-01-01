@@ -17,7 +17,7 @@ class Content extends React.Component {
           this.props.active ? (
             <>
               <Route path="/" element={<Home />} />
-              <Route path="shops" element={<Shops getKeys={this.props.getKeys} />} />
+              <Route path="shops" element={<Shops shopApi={this.props.shopApi} />} />
                 <Route path="shops/:shopId" element={<Shop keyApi={this.props.keyApi} />} />
               <Route path="fbs" element={<Fbs />} />
               <Route path="contacts" element={<Contacts />} />

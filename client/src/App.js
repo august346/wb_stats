@@ -47,8 +47,13 @@ function getRequestConfig() {
   }
 }
 
-async function aGetKeys() {
-  return API.get('/wb/wb_api_keys/', getRequestConfig())
+let shopApi = {
+  aGetKeys: async function() {
+    return API.get('/wb/wb_api_keys/', getRequestConfig())
+  },
+  aCreateKey: async function(key, name) {
+    return API.post('/wb/wb_api_keys/', {key: key, name: name}, getRequestConfig())
+  },
 }
 
 let keyApi = {
@@ -60,6 +65,13 @@ let keyApi = {
   },
   aDeleteKey: async function(id) {
     return API.delete('/wb/wb_api_keys/' + id, getRequestConfig())
+  },
+  aGetReport: async function(id, dateFrom, dateTo, brands) {
+    return API.post(
+      `/wb/wb_api_keys/${id}/report`,
+      {date_from: dateFrom, date_to: dateTo, brands: brands},
+      getRequestConfig()
+    )
   }
 }
 
@@ -114,7 +126,7 @@ class App extends Component {
         <Header auth={{active: this.state.isLoggedIn, onAuth: this.onAuth}}/>
         <Content
           active={this.state.isLoggedIn}
-          getKeys={aGetKeys}
+          shopApi={shopApi}
           keyApi={keyApi}
         />
       </div>

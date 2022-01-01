@@ -3,6 +3,8 @@ import React from 'react';
 import { Button, ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
+import NewShop from './NewShop';
+
 
 function ApiKey(info) {
   return (
@@ -21,13 +23,15 @@ class Shops extends React.Component {
   constructor(props) {
     super(props);
 
+    this.add = this.add.bind(this);
+
     this.state = {
       apiKeys: []
     }
   }
 
   async componentDidMount() {
-    await this.props.getKeys().then(
+    await this.props.shopApi.aGetKeys().then(
       (resp) => {
         this.setState({
           apiKeys: resp.data
@@ -42,15 +46,25 @@ class Shops extends React.Component {
     )
   }
 
+  async add() {
+    console.log("add");
+  }
+
   render() {
+    let apiKeysGroup = this.state.apiKeys.length > 0 ? (
+      <ListGroup>{this.state.apiKeys.map(ApiKey)}</ListGroup>
+    ) : (
+      <pre>No Shops</pre>
+    )
+
     return (
       <div>
         <h2>My Shops</h2>
         <br />
-        <Button variant="success" className="m-auto">Add</Button>{' '}
+        <NewShop create={this.props.shopApi.aCreateKey} />
         <br />
         <br />
-        <ListGroup>{this.state.apiKeys.map(ApiKey)}</ListGroup>
+        {apiKeysGroup}
       </div>
     )
   }

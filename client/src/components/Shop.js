@@ -4,6 +4,8 @@ import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import FormData from 'form-data';
 
+import Sales from './reports/Sales';
+
 
 class RealShop extends React.Component {
     constructor(props) {
@@ -11,10 +13,12 @@ class RealShop extends React.Component {
 
       this.rename = this.rename.bind(this);
       this.delete = this.delete.bind(this);
+      this.downloadReport = this.downloadReport.bind(this);
 
       this.state = {
         name: null,
-        id: props.shopId
+        id: props.shopId,
+        report: null,
       }
     }
 
@@ -77,6 +81,27 @@ class RealShop extends React.Component {
     )
   }
 
+  async downloadReport() {
+    let dateFrom = "2021-11-01";
+    let dateTo = "2021-12-01";
+    let brands = [];
+
+    await this.props.keyApi.aGetReport(this.state.id, dateFrom, dateTo, brands).then(
+      (resp) => {
+        this.setState({report: {
+          title: dateFrom + "___" + dateTo,
+          data: resp.data
+        }});
+      }
+    ).catch(
+      (e) => {
+        let resp = e.response;
+        let data = resp.data;
+        console.log(0, resp.status, data, typeof data.detail, typeof data.detail === 'string');
+      }
+    )
+  }
+
   render() {
     return (
       <>
@@ -87,10 +112,26 @@ class RealShop extends React.Component {
               <b>Name:</b> <i>{this.state.name}</i>
               <Button variant="info" className="m-3" onClick={this.rename}>&#9998;</Button>{' '}
             </p>
-            <div>
-              <Button variant="danger" onClick={this.delete}>Delete</Button>{' '}
-            </div>
+            <Form className="d-flex align-items-center">
+              <Form.Group className="m-2" controlId="formBasicFrom">
+                <Form.Label>Date from</Form.Label>
+                <Form.Control name="dateFrom" type="date" />
+              </Form.Group>
+
+              <Form.Group className="m-2" controlId="formBasicTo">
+                <Form.Label>Date to</Form.Label>
+                <Form.Control name="dateTo" type="date" />
+              </Form.Group>
+            </Form>
+            <Button variant="warning" className="m-3" onClick={this.downloadReport}>Build report</Button>{' '}
           </div>
+          {
+            !!this.state.report && (
+              <div>
+                <Sales {...this.state.report} />
+              </div>
+            )
+          }
         </div>
       </>
     )
