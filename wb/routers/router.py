@@ -75,19 +75,4 @@ async def report(
     sale_reports_with_stock_balances = [d async for d in add_stock_balances(api_key, sale_report_dicts)]
     sale_reports_final = list(add_sums(brands, sale_reports_with_stock_balances))
 
-    buff = io.StringIO()
-    writer = csv.DictWriter(buff, fieldnames=sale_reports_final[0].keys())
-    writer.writeheader()
-    list(map(writer.writerow, sale_reports_final))
-    buff.seek(0)
-
-    response = StreamingResponse(
-        iter([buff.getvalue()]),
-        media_type="text/csv"
-    )
-    vanilla_date_to = date_to - relativedelta(days=1)
-    filename = f"{date_from.isoformat()}...{vanilla_date_to.isoformat()}"
-
-    response.headers["Content-Disposition"] = f"attachment; filename={filename}.csv"
-
-    return response
+    return sale_reports_final

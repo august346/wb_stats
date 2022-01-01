@@ -35,9 +35,5 @@ class WbService:
             if resp.status != status.HTTP_200_OK:
                 await raise_resp(resp)
 
-            yield StreamingResponse(
-                resp.content.iter_chunked(1024),
-                media_type="text/csv",
-                headers={"Content-Disposition": resp.headers.get("Content-Disposition")}
-            )
+            return await resp.json()
 

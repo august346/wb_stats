@@ -59,13 +59,12 @@ async def report(
     date_from: date = Body(...),
     date_to: date = Body(...),
     brands: list[str] = Body(default=[]),
-    wb_service: WbService = Depends(get_wb_service),
+    wb_service: WbService = Depends(get_wb_service, use_cache=False),
     wak_dal: UserWbApiKeyDAL = Depends(get_user_wb_api_key_dal)
 ):
-    async for rsp in wb_service.get_report(
+    return await wb_service.get_report(
         key=await wak_dal.get_key(wak_id),
         date_from=date_from,
         date_to=date_to,
         brands=brands
-    ):
-        return rsp
+    )
