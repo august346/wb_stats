@@ -1,10 +1,36 @@
 import React, { useEffect, useState } from 'react';
 
-import { Alert, Button, Form, Modal } from 'react-bootstrap';
+import { Alert, Button, Form, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import FormData from 'form-data';
 
 import Sales from './reports/Sales';
+
+function RdyButton(props) {
+  return (
+      <Button
+        id="buildReport"
+        variant="warning"
+        className="m-3"
+        disabled={props.isReady ? false : true }
+        onClick={props.download}
+      >
+        Build report
+      </Button>
+  );
+}
+
+function ReportButton(props) {
+  return props.isReady ? <RdyButton {...props} /> : (
+    <OverlayTrigger
+      placement="right"
+      overlay={<Tooltip id="tooltip-disabled">Select dates for build report</Tooltip>}>
+      <span className="d-inline-block">
+        <RdyButton {...props} />
+      </span>
+    </OverlayTrigger>
+  )
+}
 
 
 class RealShop extends React.Component {
@@ -14,13 +40,21 @@ class RealShop extends React.Component {
       this.rename = this.rename.bind(this);
       this.delete = this.delete.bind(this);
       this.downloadReport = this.downloadReport.bind(this);
+      this.handleInputChange = this.handleInputChange.bind(this);
 
       this.state = {
-        name: null,
         id: props.shopId,
+        name: null,
+
+        dateFrom: null,
+        dateTo: null,
         report: null,
       }
     }
+
+  handleInputChange(e) {
+    this.setState({[e.target.name]: e.target.value});
+  }
 
   async componentDidMount() {
     await this.props.keyApi.aGetKey(this.props.shopId).then(
@@ -63,9 +97,10 @@ class RealShop extends React.Component {
   }
 
   async delete() {
-    let result = window.confirm(`Are you sure you want to delete "${this.state.name}" Store?`);
-    if (!result) {
-      return
+    let result = window.prompt(`Enter shop name "${this.state.name}" to delete?`);
+    if (result !== this.state.name) {
+      alert("Not deleted: incorrect name entered")
+      return ;
     }
 
     await this.props.keyApi.aDeleteKey(this.props.shopId).then(
@@ -82,12 +117,17 @@ class RealShop extends React.Component {
   }
 
   async downloadReport() {
-    let dateFrom = "2021-11-01";
-    let dateTo = "2021-12-01";
+    let dateFrom = this.state.dateFrom;
+    let dateTo = this.state.dateTo;
     let brands = [];
+
+    if (dateFrom > dateTo) {
+      alert("\"Date From\" may not be lower \"Date To\"");
+    }
 
     await this.props.keyApi.aGetReport(this.state.id, dateFrom, dateTo, brands).then(
       (resp) => {
+        console.log(resp);
         this.setState({report: {
           title: dateFrom + "___" + dateTo,
           data: resp.data
@@ -96,6 +136,7 @@ class RealShop extends React.Component {
     ).catch(
       (e) => {
         let resp = e.response;
+        console.log(resp);
         let data = resp.data;
         console.log(0, resp.status, data, typeof data.detail, typeof data.detail === 'string');
       }
@@ -106,24 +147,22 @@ class RealShop extends React.Component {
     return (
       <>
         <div>
-          <h2 className="m-4">Shop</h2>
+          <h2 className="m-4">{this.state.name}</h2>
+          <Button variant="info" className="m-3" onClick={this.rename}>Change shop name</Button>{' '}
+          <Button variant="danger" className="m-3" onClick={this.delete}>Delete shop</Button>{' '}
           <div>
-            <p>
-              <b>Name:</b> <i>{this.state.name}</i>
-              <Button variant="info" className="m-3" onClick={this.rename}>&#9998;</Button>{' '}
-            </p>
             <Form className="d-flex align-items-center">
               <Form.Group className="m-2" controlId="formBasicFrom">
                 <Form.Label>Date from</Form.Label>
-                <Form.Control name="dateFrom" type="date" />
+                <Form.Control name="dateFrom" type="date" onChange={this.handleInputChange} />
               </Form.Group>
 
               <Form.Group className="m-2" controlId="formBasicTo">
                 <Form.Label>Date to</Form.Label>
-                <Form.Control name="dateTo" type="date" />
+                <Form.Control name="dateTo" type="date" onChange={this.handleInputChange} />
               </Form.Group>
             </Form>
-            <Button variant="warning" className="m-3" onClick={this.downloadReport}>Build report</Button>{' '}
+            <ReportButton isReady={!!this.state.dateFrom && !!this.state.dateTo} download={this.downloadReport} />
           </div>
           {
             !!this.state.report && (

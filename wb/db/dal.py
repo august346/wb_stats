@@ -3,7 +3,7 @@ from functools import wraps, cached_property
 from typing import Optional, Iterable
 
 from fastapi import HTTPException
-from sqlalchemy import func, Column
+from sqlalchemy import func, Column, cast, Date
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.future import select
@@ -139,7 +139,7 @@ class SaleReportDAL(BaseDAL):
                 *self._group_aggregate_funcs
             ).filter(
                 SaleReport.api_key == api_key,
-                SaleReport.created.between(date_from, date_to)
+                cast(SaleReport.created, Date).between(date_from, date_to)
             ).group_by(
                 *self._group_fields
             ).order_by(*self._group_fields)

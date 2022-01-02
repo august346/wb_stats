@@ -69,7 +69,7 @@ async def report(
 
     sale_report_rows = await sale_report_dal.get_grouped(api_key, date_from, date_to)
     if not sale_report_rows:
-        raise not_found_exc
+        return []
 
     sale_report_dicts = map(dict, sale_report_rows)
     sale_reports_with_stock_balances = [d async for d in add_stock_balances(api_key, sale_report_dicts)]
