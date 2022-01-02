@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import FormData from 'form-data';
 
 
 class RealNewShop extends React.Component {
@@ -77,7 +76,7 @@ class RealNewShop extends React.Component {
 
         <Modal show={this.state.show} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>LigIn</Modal.Title>
+            <Modal.Title>Add</Modal.Title>
           </Modal.Header>
           <Modal.Body>
           <Form>

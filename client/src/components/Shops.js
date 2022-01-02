@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Button, ListGroup } from 'react-bootstrap';
+import { ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 import NewShop from './NewShop';

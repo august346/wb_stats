@@ -1,9 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-restricted-globals */
 import React, { Component } from 'react';
-import axios from 'axios';
 import jwt_decode from "jwt-decode";
-import { Button, Container, Card, Row } from 'react-bootstrap';
 
 import './App.css';
 import API from "./utils/API";
@@ -77,16 +75,6 @@ let keyApi = {
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-
-function getKeys() {
-  return [
-      {id:1, name: "test1", last_signs: "...abcd"},
-      {id:2, name: "test2", last_signs: "...efgh"},
-      {id:3, name: "test3", last_signs: "...ijkl"},
-      {id:4, name: "test4", last_signs: "...mnop"},
-  ]
 }
 
 async function ex() {

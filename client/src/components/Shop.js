@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import { Alert, Button, Form, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
-import FormData from 'form-data';
 
 import Sales from './reports/Sales';
 
 function RdyButton(props) {
   return (
       <Button
-        id="buildReport"
         variant="warning"
         className="m-3"
         disabled={props.isReady ? false : true }
@@ -127,7 +125,6 @@ class RealShop extends React.Component {
 
     await this.props.keyApi.aGetReport(this.state.id, dateFrom, dateTo, brands).then(
       (resp) => {
-        console.log(resp);
         this.setState({report: {
           title: dateFrom + "___" + dateTo,
           data: resp.data

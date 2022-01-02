@@ -5,7 +5,7 @@ import { Table } from 'react-bootstrap';
 function Sales(props) {
   let data = props.data;
 
-  if (data.length == 0) {
+  if (data.length === 0) {
     return (<p>No data</p>)
   }
 

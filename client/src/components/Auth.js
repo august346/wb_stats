@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Alert, Button, Form, Modal } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 import SignUp from "./SignUp";
