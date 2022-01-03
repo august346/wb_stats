@@ -19,7 +19,7 @@ class Auth extends React.Component {
             variant="outline-primary"
             className="btn me-2"
             onClick={() => this.props.auth.onAuth({}, false)}
-          >LogOut</Button>{' '}
+          >Выйти</Button>{' '}
         </div>
       )
     }

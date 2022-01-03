@@ -77,9 +77,8 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-async function ex() {
-  let d = await API.get('/');
-  console.log(d.status);
+async function getInfo() {
+  return API.get('/');
 }
 
 
@@ -105,7 +104,20 @@ class App extends Component {
   }
 
   async componentDidMount() {
-    await ex();
+    await getInfo().then(
+      (resp) => {
+        console.log(resp.data);
+        this.setState({
+          supportEmail: resp.data.support_email
+        })
+      }
+    ).catch(
+      (e) => {
+        let resp = e.response;
+        let data = resp.data;
+        console.log(0, resp.status, data, typeof data.detail, typeof data.detail === 'string');
+      }
+    );
   }
 
   render() {
@@ -113,6 +125,7 @@ class App extends Component {
       <div className='App'>
         <Header auth={{active: this.state.isLoggedIn, onAuth: this.onAuth}}/>
         <Content
+          supportEmail={this.state.supportEmail}
           active={this.state.isLoggedIn}
           shopApi={shopApi}
           keyApi={keyApi}

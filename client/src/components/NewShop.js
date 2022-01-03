@@ -71,12 +71,12 @@ class RealNewShop extends React.Component {
     return (
       <>
         <Button variant="success" className="btn ml-auto" onClick={this.handleShow}>
-          Add
+          Создать
         </Button>
 
         <Modal show={this.state.show} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Add</Modal.Title>
+            <Modal.Title>Создать</Modal.Title>
           </Modal.Header>
           <Modal.Body>
           <Form>
@@ -91,14 +91,14 @@ class RealNewShop extends React.Component {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicName">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>Название магазина</Form.Label>
               <Form.Control name="name" required placeholder="Enter Shop name" onChange={this.handleInputChange} />
             </Form.Group>
           </Form>
           </Modal.Body>
           <Modal.Footer>
             <Button className="mx-auto" type="submit" variant="outline-primary" onClick={this.create}>
-              Create
+              Создать
             </Button>
           </Modal.Footer>
         </Modal>

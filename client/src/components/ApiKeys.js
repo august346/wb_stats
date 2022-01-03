@@ -46,9 +46,9 @@ class ApiKeys extends React.Component {
 
     return (
       <div>
-        <h2>My Shops</h2>
+        <h2>Мои магазины</h2>
         <br />
-        <Button variant="success" className="m-auto">Add new</Button>{' '}
+        <Button variant="success" className="m-auto">Добавить</Button>{' '}
         <br />
         <br />
         <ListGroup>{apiKeysList}</ListGroup>

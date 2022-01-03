@@ -80,18 +80,18 @@ class SignInWithoutNavigate extends React.Component {
       errors.general = this.state.error;
     }
     if (this.state.email && !this.state.email.match(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/)) {
-      errors.email = "Not valid email";
+      errors.email = "Невалидный email";
     }
 
     return (
       <>
         <Button variant="outline-primary" className="btn ml-auto" onClick={this.handleShow}>
-          LogIn
+          Логин
         </Button>
 
         <Modal show={this.state.show} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>LigIn</Modal.Title>
+            <Modal.Title>Логин</Modal.Title>
           </Modal.Header>
           <Modal.Body>
           <Form>
@@ -101,7 +101,7 @@ class SignInWithoutNavigate extends React.Component {
               </Alert>
             )}
             <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Email address</Form.Label>
+              <Form.Label>Email</Form.Label>
               <Form.Control name="email" type="email" required placeholder="Enter email" onChange={this.handleInputChange} isInvalid={!!errors.email} />
               <Form.Control.Feedback type="invalid">
                 {errors.email}
@@ -109,14 +109,14 @@ class SignInWithoutNavigate extends React.Component {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Password</Form.Label>
+              <Form.Label>Пароль</Form.Label>
               <Form.Control name="password" type="password" required placeholder="Password" onChange={this.handleInputChange} />
             </Form.Group>
           </Form>
           </Modal.Body>
           <Modal.Footer>
             <Button className="mx-auto" type="submit" variant="outline-primary" onClick={this.onClick}>
-              LogIn
+              Логин
             </Button>
           </Modal.Footer>
         </Modal>

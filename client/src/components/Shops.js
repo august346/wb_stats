@@ -23,8 +23,6 @@ class Shops extends React.Component {
   constructor(props) {
     super(props);
 
-    this.add = this.add.bind(this);
-
     this.state = {
       apiKeys: []
     }
@@ -46,20 +44,16 @@ class Shops extends React.Component {
     )
   }
 
-  async add() {
-    console.log("add");
-  }
-
   render() {
     let apiKeysGroup = this.state.apiKeys.length > 0 ? (
       <ListGroup>{this.state.apiKeys.map(ApiKey)}</ListGroup>
     ) : (
-      <pre>No Shops</pre>
+      <pre>Нет магазинов</pre>
     )
 
     return (
       <div>
-        <h2>My Shops</h2>
+        <h2>Мои магазины</h2>
         <br />
         <NewShop create={this.props.shopApi.aCreateKey} />
         <br />

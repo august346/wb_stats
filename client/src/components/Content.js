@@ -20,12 +20,12 @@ class Content extends React.Component {
               <Route path="shops" element={<Shops shopApi={this.props.shopApi} />} />
                 <Route path="shops/:shopId" element={<Shop keyApi={this.props.keyApi} />} />
               <Route path="fbs" element={<Fbs />} />
-              <Route path="contacts" element={<Contacts />} />
+              <Route path="contacts" element={<Contacts supportEmail={this.props.supportEmail} />} />
             </>
           ) : (
             <>
               <Route path="/" element={<Home />} />
-              <Route path="/contacts" element={<Contacts />} />
+              <Route path="/contacts" element={<Contacts supportEmail={this.props.supportEmail} />} />
             </>
           )
         }

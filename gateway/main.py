@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from config import settings
 from db.config import engine, Base
 from routers import user_router, oauth2, wb_api_key
 
@@ -34,7 +35,7 @@ async def startup():
 
 @app.get("/")
 async def root():
-    return {"service": "getaway"}
+    return {"service": "getaway", "support_email": settings.support_email}
 
 
 if __name__ == '__main__':

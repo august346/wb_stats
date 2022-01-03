@@ -2,10 +2,13 @@ import React from 'react'
 
 class Contacts extends React.Component {
   render() {
+    let supportEmail = this.props.supportEmail || "example@example.com";
     return (
       <>
-        <h2>Contacts</h2>
-        <div>examle@example.com</div>
+        <h2>Контакты</h2>
+        <p>
+          Email: <a href={"mailto:" + supportEmail}>{supportEmail}</a>
+        </p>
       </>
     )
   }

@@ -7,7 +7,7 @@ import API from "../utils/API";
 
 async function signUp(email, password, password_confirm) {
   if (password !== password_confirm) {
-    alert("not equal passwords");
+    alert("Пароли не совпадают");
     return ;
   }
 
@@ -58,7 +58,7 @@ class SignUp extends React.Component {
     ).then(
       (data) => {
         this.handleClose();
-        alert("Success. Wait email activation confirm in few hours.")
+        alert("Успешно. Дождитесь письма на email.")
       }
     ).catch(
       (err) => {
@@ -84,28 +84,28 @@ class SignUp extends React.Component {
       errors.general = this.state.error;
     }
     if (!this.state.email) {
-      errors.email = "May not be empty"
+      errors.email = "Не может быть пустым"
     } else if (!this.state.email.match(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/)) {
-      errors.email = "Not valid email"
+      errors.email = "Невалидный email"
     }
     if (!this.state.password) {
-      errors.password = "May not be empty"
+      errors.password = "Не может быть пустым"
     } else if (!this.state.password.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)) {
-      errors.password = "Not secure"
+      errors.password = "В пароле должны быть цифры и латинские буквы"
     }
     if (this.state.password !== this.state.password_confirm) {
-      errors.password_confirm = "Not equal with first password"
+      errors.password_confirm = "Не совпадает"
     }
 
     return (
       <>
         <Button variant="primary" className="mx-2" onClick={this.handleShow}>
-          SignUp
+          Регистрация
         </Button>
 
         <Modal show={this.state.show} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Registration</Modal.Title>
+            <Modal.Title>Регистрация</Modal.Title>
           </Modal.Header>
           <Modal.Body>
           <Form>
@@ -115,10 +115,10 @@ class SignUp extends React.Component {
               </Alert>
             )}
             <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Email address</Form.Label>
+              <Form.Label>Email</Form.Label>
               <Form.Control name="email" type="email" required placeholder="Enter email" onChange={this.handleInputChange} isInvalid={!!errors.email} />
               <Form.Text className="text-muted">
-                We'll never share your email with anyone else.
+                Мы не передаём ваш email сторонним сервисам
               </Form.Text>
               <Form.Control.Feedback type="invalid">
                 {errors.email}
@@ -126,14 +126,14 @@ class SignUp extends React.Component {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Password</Form.Label>
+              <Form.Label>Пароль</Form.Label>
               <Form.Control name="password" type="password" required placeholder="Password" onChange={this.handleInputChange} isInvalid={!!errors.password} />
               <Form.Control.Feedback type="invalid">
                 {errors.password}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword2">
-              <Form.Label>Confirm Password</Form.Label>
+              <Form.Label>Подтверждение паролья</Form.Label>
               <Form.Control name="password_confirm" type="password" placeholder="Password" onChange={this.handleInputChange} isInvalid={!!errors.password_confirm} />
               <Form.Control.Feedback type="invalid">
                 {errors.password_confirm}
@@ -143,7 +143,7 @@ class SignUp extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             <Button className="mx-auto" variant="outline-primary" onClick={this.onClick}>
-              Submit
+              Зарегистрировать
             </Button>
           </Modal.Footer>
         </Modal>

@@ -7,6 +7,7 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     app_name: str = "WB Stats API"
     admin_email: str
+    support_email: str
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int

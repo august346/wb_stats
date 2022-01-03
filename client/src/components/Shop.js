@@ -13,7 +13,7 @@ function RdyButton(props) {
         disabled={props.isReady ? false : true }
         onClick={props.download}
       >
-        Build report
+        Построить отчёт
       </Button>
   );
 }
@@ -22,7 +22,7 @@ function ReportButton(props) {
   return props.isReady ? <RdyButton {...props} /> : (
     <OverlayTrigger
       placement="right"
-      overlay={<Tooltip id="tooltip-disabled">Select dates for build report</Tooltip>}>
+      overlay={<Tooltip id="tooltip-disabled">Выбрете даты чтобы построить отчёт</Tooltip>}>
       <span className="d-inline-block">
         <RdyButton {...props} />
       </span>
@@ -145,17 +145,17 @@ class RealShop extends React.Component {
       <>
         <div>
           <h2 className="m-4">{this.state.name}</h2>
-          <Button variant="info" className="m-3" onClick={this.rename}>Change shop name</Button>{' '}
-          <Button variant="danger" className="m-3" onClick={this.delete}>Delete shop</Button>{' '}
+          <Button variant="info" className="m-3" onClick={this.rename}>Переименовать</Button>{' '}
+          <Button variant="danger" className="m-3" onClick={this.delete}>Удалить магазин</Button>{' '}
           <div>
             <Form className="d-flex align-items-center">
               <Form.Group className="m-2" controlId="formBasicFrom">
-                <Form.Label>Date from</Form.Label>
+                <Form.Label>С</Form.Label>
                 <Form.Control name="dateFrom" type="date" onChange={this.handleInputChange} />
               </Form.Group>
 
               <Form.Group className="m-2" controlId="formBasicTo">
-                <Form.Label>Date to</Form.Label>
+                <Form.Label>По</Form.Label>
                 <Form.Control name="dateTo" type="date" onChange={this.handleInputChange} />
               </Form.Group>
             </Form>
