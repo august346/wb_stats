@@ -41,7 +41,7 @@ async def prepare_sale_dates(
     if date_from_dt > now:
         raise utils.not_found_exc
 
-    min_created, max_created = await sale_report_dal.get_max_min_created(api_key)
+    min_created, max_created = await sale_report_dal.get_min_max_created(api_key)
     return SaleDates(
         now=now,
         d_from=date_from,

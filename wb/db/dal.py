@@ -84,7 +84,7 @@ class SaleReportDAL(BaseDAL):
             for expected in api_keys
         }
 
-    async def get_max_min_created(
+    async def get_min_max_created(
         self, api_key: str, dt_range: tuple[date, date] = None
     ) -> tuple[Optional[datetime], Optional[datetime]]:
         sel = select(

@@ -54,7 +54,7 @@ async def report(
     sale_report_rows = await sale_report_dal.get_grouped(api_key, psd.d_from, psd.d_to)
 
     # TODO fix atom with collect
-    max_created, min_created = await sale_report_dal.get_max_min_created(api_key, (psd.d_from, psd.d_to))
+    min_created, max_created = await sale_report_dal.get_min_max_created(api_key, (psd.d_from, psd.d_to))
     response.headers["X-Data-Min-Created"] = min_created and min_created.isoformat()
     response.headers["X-Data-Max-Created"] = max_created and max_created.isoformat()
 
