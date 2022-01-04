@@ -92,8 +92,6 @@ async def get_storage(key: str) -> dict[str, dict]:
                 else:
                     rows: list[dict] = await resp.json()
                     data = {r["nmId"]: r for r in rows}
-                    if data:
-                        await redis.Storage.set(key, data)
-                        return data
-                    else:
-                        return {}
+
+                    await redis.Storage.set(key, data, None if data else 60)
+                    return data

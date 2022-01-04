@@ -1,6 +1,6 @@
 from datetime import date
 
-from fastapi import APIRouter, Depends, HTTPException, Body
+from fastapi import APIRouter, Depends, HTTPException, Body, Response
 from starlette import status
 
 from db.dal import UserWbApiKeyDAL
@@ -12,8 +12,19 @@ router = APIRouter()
 
 
 @router.get("/{wak_id}")
-async def get(wak_id: int, wak_dal: UserWbApiKeyDAL = Depends(get_user_wb_api_key_dal)) -> UserWbApiKey:
-    return await wak_dal.get(wak_id)
+async def get(
+    wak_id: int,
+    wb_service: WbService = Depends(get_wb_service),
+    wak_dal: UserWbApiKeyDAL = Depends(get_user_wb_api_key_dal)
+):
+    api_key = await wak_dal.get_with_key(wak_id)
+    brands = await wb_service.get_brands(api_key.wb_api_key.key)
+    return {
+        "id": api_key.wb_api_key_id,
+        "name": api_key.name,
+        "key": f"...{api_key.wb_api_key.key[-6:]}",
+        "brands": brands
+    }
 
 
 @router.patch("/{wak_id}")
@@ -55,16 +66,21 @@ async def get_list(wak_dal: UserWbApiKeyDAL = Depends(get_user_wb_api_key_dal)) 
 
 @router.post("/{wak_id}/report")
 async def report(
+    response: Response,
     wak_id: int,
     date_from: date = Body(...),
     date_to: date = Body(...),
     brands: list[str] = Body(default=[]),
-    wb_service: WbService = Depends(get_wb_service, use_cache=False),
+    wb_service: WbService = Depends(get_wb_service),
     wak_dal: UserWbApiKeyDAL = Depends(get_user_wb_api_key_dal)
 ):
-    return await wb_service.get_report(
+    data, headers = await wb_service.get_report(
         key=await wak_dal.get_key(wak_id),
         date_from=date_from,
         date_to=date_to,
         brands=brands
     )
+
+    response.headers.update(headers)
+
+    return data

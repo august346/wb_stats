@@ -170,3 +170,12 @@ class SaleReportDAL(BaseDAL):
             yield func.coalesce(
                 func.sum(field).filter(f), 0
             ).label(f"sum_{name}")
+
+    async def get_brands(self, api_key: str) -> list[SaleReport]:
+        return await self._all(
+            select(SaleReport.brand).filter(
+                SaleReport.api_key == api_key
+            ).group_by(
+                SaleReport.brand
+            ).order_by(func.count(1).desc())
+        )

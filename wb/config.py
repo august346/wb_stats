@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     redis: str = os.environ.get("REDIS", "redis://localhost")
     postgres: str = os.environ.get("POSTGRES", "postgresql+asyncpg://postgres:postgres@localhost")
 
+    debug: bool = False
+
     class Config:
         env_file = ".env"
 

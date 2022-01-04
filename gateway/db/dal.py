@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy import func
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.future import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 from sqlalchemy.sql import Select
 from starlette import status
 
@@ -25,11 +25,14 @@ class NotFound(HTTPException):
 class AlreadyExist(HTTPException):
     def __init__(self, **kwargs):
         model_name = self.model.__name__
-        model_info = f"{model_name}({', '.join(f'{k}={v}' for k, v in kwargs.items())})"
 
         super(AlreadyExist, self).__init__(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"That {model_name} already exist: {model_info}"
+            detail={
+                "error": "duplicate",
+                "model": model_name,
+                "data": kwargs
+            }
         )
 
     @property
@@ -124,13 +127,13 @@ class BaseWithUserDal(BaseDAL):
 
 class UserWbApiKeyDAL(BaseWithUserDal):
     async def assert_not_exist(self, key: str):
-        if await self._first(
-                select(func.count()).filter(
-                    UserWbApiKey.user_id == self.user_id,
-                    UserWbApiKey.wb_api_key.has(key=key)
-                )
+        if name := await self._first(
+            select(UserWbApiKey.name).filter(
+                UserWbApiKey.user_id == self.user_id,
+                UserWbApiKey.wb_api_key.has(key=key)
+            )
         ):
-            raise UserWbApiKeyDuplicates(key=key)
+            raise UserWbApiKeyDuplicates(name=name)
 
     async def _get_or_create_wb_api_key(self, key: str) -> WbApiKey:
         return await self._get_or_create(
@@ -143,6 +146,16 @@ class UserWbApiKeyDAL(BaseWithUserDal):
             select(UserWbApiKey).filter(
                 UserWbApiKey.user_id == self.user_id,
                 UserWbApiKey.wb_api_key.has(id=wb_api_key_id),
+            )
+        )
+
+    async def get_with_key(self, wb_api_key_id: int) -> UserWbApiKey:
+        return await self._first(
+            select(UserWbApiKey).filter(
+                UserWbApiKey.user_id == self.user_id,
+                UserWbApiKey.wb_api_key.has(id=wb_api_key_id),
+            ).options(
+                selectinload(UserWbApiKey.wb_api_key)
             )
         )
 

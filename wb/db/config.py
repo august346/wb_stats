@@ -9,7 +9,7 @@ Base = declarative_base()
 
 
 def get_engine_and_session_maker():
-    eng = create_async_engine(DB_URL, echo=True)
+    eng = create_async_engine(DB_URL, echo=settings.debug)
 
     def _get_session_maker(**kwargs):
         return sessionmaker(eng, autoflush=False, **kwargs)

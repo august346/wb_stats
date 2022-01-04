@@ -24,9 +24,9 @@ class Storage:
         return f"storage-{k}"
 
     @classmethod
-    async def set(cls, key: str, items: dict[str, dict]):
+    async def set(cls, key: str, items: dict[str, dict], ex: Optional[int] = None):
         value: str = json.dumps(items, separators=(",", ":"), ensure_ascii=False)
-        return await _set_value(cls._get_key(key), value, ex=cls._ex)
+        return await _set_value(cls._get_key(key), value, ex=cls._ex if ex is None else ex)
 
     @classmethod
     async def get(cls, key: str):

@@ -14,9 +14,12 @@ class Settings(BaseSettings):
     url_wb_service: str = "http://localhost:1112"
     path_wb_service_init: str = "/init"
     path_wb_service_report: str = "/report"
+    path_wb_service_brands: str = "/sale_brands"
 
     db_name: str = "api_gateway"
     postgres: str = os.environ.get("POSTGRES", "postgresql+asyncpg://postgres:postgres@localhost")
+
+    debug: bool = False
 
     class Config:
         env_file = ".env"
