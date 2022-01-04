@@ -199,7 +199,7 @@ class RealShop extends React.Component {
                   selectedValues={this.state.selectedBrands}
                   showCheckbox="true"
                   showArrow="true"
-                  closeOnSelect="false"
+                  closeOnSelect="true"
                   displayValue="name"
                   onSelect={this.setBrands}
                   onRemove={this.setBrands}
