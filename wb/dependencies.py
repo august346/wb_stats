@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 
 import aiohttp
-from fastapi import Body, Depends, Response
+from fastapi import Body, Depends
 from dateutil.relativedelta import relativedelta
 
 from config import settings
@@ -30,7 +30,6 @@ class SaleDates:
 
 
 async def prepare_sale_dates(
-    response: Response,
     api_key: str = Body(...),
     date_from: date = Body(...),
     date_to: date = Body(...),
@@ -43,8 +42,6 @@ async def prepare_sale_dates(
         raise utils.not_found_exc
 
     min_created, max_created = await sale_report_dal.get_max_min_created(api_key)
-    response.headers["X-Data-Min-Created"] = min_created.isoformat()
-    response.headers["X-Data-Max-Created"] = max_created.isoformat()
     return SaleDates(
         now=now,
         d_from=date_from,

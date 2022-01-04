@@ -1,7 +1,7 @@
 from datetime import date, datetime
 
 from dateutil.relativedelta import relativedelta
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Body
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Body, Response
 
 from db.dal import SaleReportDAL
 from dependencies import get_init_sale_reports_getter, get_sale_report_dal, prepare_sale_dates, SaleDates
@@ -38,6 +38,7 @@ async def exists(api_keys: list[str] = Body(...), sale_report_dal: SaleReportDAL
 
 @router.post("/report")
 async def report(
+    response: Response,
     api_key: str = Body(...),
     brands: list[str] = Body(default=[]),
     psd: SaleDates = Depends(prepare_sale_dates),
@@ -49,6 +50,10 @@ async def report(
     now: datetime = datetime.utcnow()
     if psd.min > psd.dt_from or psd.max < min(psd.dt_from, now):
         await tasks.async_collect_rows(api_key, psd.d_from, psd.d_to)
+
+    min_created, max_created = await sale_report_dal.get_max_min_created(api_key)
+    response.headers["X-Data-Min-Created"] = min_created.isoformat()
+    response.headers["X-Data-Max-Created"] = max_created.isoformat()
 
     sale_report_rows = await sale_report_dal.get_grouped(api_key, psd.d_from, psd.d_to)
     if not sale_report_rows:
