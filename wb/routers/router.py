@@ -51,17 +51,22 @@ async def report(
     if psd.min > psd.dt_from or psd.max < min(psd.dt_from, now):
         await tasks.async_collect_rows(api_key, psd.d_from, psd.d_to)
 
-    min_created, max_created = await sale_report_dal.get_max_min_created(api_key)
-    response.headers["X-Data-Min-Created"] = min_created.isoformat()
-    response.headers["X-Data-Max-Created"] = max_created.isoformat()
-
     sale_report_rows = await sale_report_dal.get_grouped(api_key, psd.d_from, psd.d_to)
-    if not sale_report_rows:
-        return []
+    min_created, max_created = "--"
+    if sale_report_rows:
+        sale_report_dicts = map(dict, sale_report_rows)
+        sale_reports_with_stock_balances = [d async for d in add_stock_balances(api_key, sale_report_dicts)]
+        sale_reports_final = list(add_sums(brands, sale_reports_with_stock_balances))
 
-    sale_report_dicts = map(dict, sale_report_rows)
-    sale_reports_with_stock_balances = [d async for d in add_stock_balances(api_key, sale_report_dicts)]
-    sale_reports_final = list(add_sums(brands, sale_reports_with_stock_balances))
+        dates: list[datetime] = list(created for row in sale_reports_final if (created := row.get("created")))
+        if dates:
+            min_created = min(dates).isoformat()
+            max_created = max(dates).isoformat()
+    else:
+        sale_reports_final = []
+
+    response.headers["X-Data-Min-Created"] = min_created
+    response.headers["X-Data-Max-Created"] = max_created
 
     return sale_reports_final
 
