@@ -10,7 +10,7 @@ function CSV(props) {
       columns={props.headers.map(h => ({id: h, displayName: h}))}
       datas={props.data}
     >
-      <Button variant="dark">DOWNLOAD</Button>
+      <Button variant="dark">СКАЧАТЬ</Button>
     </CsvDownloader>
   )
 }
@@ -52,9 +52,9 @@ function Sales(props) {
 
   return (
     <>
-      <h3>Report:</h3>
-      <small className="text-size-small">First sale: <pre>{props.dates.min}</pre></small>
-      <small className="text-size-small">Last sale: <pre>{props.dates.max}</pre></small>
+      <h3>Отчёт:</h3>
+      <small className="text-size-small">Первая покупка в рамках отчёта: <pre>{props.dates.min}</pre></small>
+      <small className="text-size-small">Последняя покупка в рамках отчёта: <pre>{props.dates.max}</pre></small>
       <CSV title={props.table.title} headers={headers} data={data}/>
       <Table striped bordered hover size="sm" style={{fontSize: 10}}>
         <caption style={{captionSide: "top"}}>{props.table.title + ".csv"}</caption>

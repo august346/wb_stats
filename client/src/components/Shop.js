@@ -77,10 +77,10 @@ class RealShop extends React.Component {
   }
 
   async rename() {
-    let newName = window.prompt("Enter new shop name");
+    let newName = window.prompt("Введите новое имя магазина");
 
     if (!newName) {
-      alert("Name may not be empty!\nAborted");
+      alert("Отмена! Имя не может быть пустым.");
       return ;
     }
 
@@ -100,9 +100,9 @@ class RealShop extends React.Component {
   }
 
   async delete() {
-    let result = window.prompt(`Enter shop name "${this.state.name}" to delete?`);
+    let result = window.prompt(`Введите имя магазина "${this.state.name}" чтобы удалить`);
     if (result !== this.state.name) {
-      alert("Not deleted: incorrect name entered")
+      alert("Не удалено: введено некорректное имя")
       return ;
     }
 
@@ -126,10 +126,10 @@ class RealShop extends React.Component {
     let brands = this.state.selectedBrands.map(b => (b.name));
 
     if (dateFrom > dateTo) {
-      alert("\"Date From\" may not be lower \"Date To\"");
+      alert("Дата начала не может быть больше Даты окончания");
       return
     } else if (nowDate < dateFrom) {
-      alert(`"Date From" may not be lower now (${nowDate})`)
+      alert(`Дата начала не может быть больше сегодняшней (${nowDate})`)
       return
     }
 
@@ -193,7 +193,7 @@ class RealShop extends React.Component {
               </div>
 
               <Form.Group className="m-2" controlId="formBasicBrands">
-                <Form.Label>Select brands for separated sums (multi)</Form.Label>
+                <Form.Label>Выберите бренды по которым отдельно посчитать суммы</Form.Label>
                 <Multiselect
                   options={this.state.brands}
                   selectedValues={this.state.selectedBrands}
