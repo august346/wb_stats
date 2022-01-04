@@ -93,7 +93,7 @@ class SaleReportDAL(BaseDAL):
                 func.max(SaleReport.created),
             ).filter(
                 SaleReport.api_key == api_key,
-                *(cast(SaleReport.created, Date).between(dt_range) if dt_range else [])
+                *(cast(SaleReport.created, Date).between(*dt_range) if dt_range else [])
             ).group_by(
                 SaleReport.api_key
             )
