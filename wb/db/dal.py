@@ -84,13 +84,16 @@ class SaleReportDAL(BaseDAL):
             for expected in api_keys
         }
 
-    async def get_max_min_created(self, api_key: str) -> tuple[Optional[datetime], Optional[datetime]]:
+    async def get_max_min_created(
+        self, api_key: str, dt_range: tuple[date, date] = None
+    ) -> tuple[Optional[datetime], Optional[datetime]]:
         rows = await self._all(
             select(
                 func.min(SaleReport.created),
                 func.max(SaleReport.created),
             ).filter(
-                SaleReport.api_key == api_key
+                SaleReport.api_key == api_key,
+                *(cast(SaleReport.created, Date).between(dt_range) if dt_range else [])
             ).group_by(
                 SaleReport.api_key
             )
