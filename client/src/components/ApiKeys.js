@@ -2,18 +2,6 @@ import React from 'react';
 
 import { Button, ListGroup } from 'react-bootstrap';
 
-
-function ApiKeyPage(props) {
-  return (
-    <li className="col-xs-2 col-sm-5 d-flex m-1">
-      <Button variant="outline-success">{props.info.name}</Button>{' '}
-      <Button variant="primary" className="ml-auto">✎</Button>{' '}
-      <Button variant="danger" className="ml-2">✕</Button>{' '}
-    </li>
-  );
-}
-
-
 class ApiKeys extends React.Component {
   constructor(props) {
     super(props);
