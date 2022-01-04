@@ -58,7 +58,7 @@ async def report(
     response.headers["X-Data-Min-Created"] = min_created and min_created.isoformat()
     response.headers["X-Data-Max-Created"] = max_created and max_created.isoformat()
 
-    if not sale_report_rows:
+    if sale_report_rows:
         sale_report_dicts = map(dict, sale_report_rows)
         sale_reports_with_stock_balances = [d async for d in add_stock_balances(api_key, sale_report_dicts)]
         sale_reports_final = list(add_sums(brands, sale_reports_with_stock_balances))
