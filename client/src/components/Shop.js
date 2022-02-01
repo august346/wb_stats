@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Button, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Form, OverlayTrigger, Tabs, Tab, Tooltip } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import Multiselect from 'multiselect-react-dropdown';
 
@@ -173,8 +173,8 @@ class RealShop extends React.Component {
 
   render() {
     return (
-      <>
-        <div>
+      <Tabs defaultActiveKey="sales-analitics" id="uncontrolled-tab-example" className="my-3">
+        <Tab eventKey="sales-analitics" title="Аналитика продаж">
           <h2 className="m-4">{this.state.name}</h2>
           <Button variant="info" className="m-3" onClick={this.rename}>Переименовать</Button>{' '}
           <Button variant="danger" className="m-3" onClick={this.delete}>Удалить магазин</Button>{' '}
@@ -215,8 +215,11 @@ class RealShop extends React.Component {
               </div>
             )
           }
-        </div>
-      </>
+        </Tab>
+        <Tab eventKey="buy-prognosis" title="Прогноз закупок согласно остатков">
+          <p>Данный функционал в разработке и будет скоро доступен</p>
+        </Tab>
+      </Tabs>
     )
   }
 }
