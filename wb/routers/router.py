@@ -9,7 +9,7 @@ from parse.api import SaleReportGetter
 from tasks import tasks
 from utils import utils
 from utils.collector import add_stock_balances
-from utils.transformer import add_sums
+from utils.transformer import get_sums
 
 router = APIRouter()
 
@@ -51,7 +51,7 @@ async def report(
     if psd.min > psd.dt_from or psd.max < min(psd.dt_from, now):
         await tasks.async_collect_rows(api_key, psd.d_from, psd.d_to)
 
-    sale_report_rows = await sale_report_dal.get_grouped(api_key, psd.d_from, psd.d_to)
+    sale_report_rows = await sale_report_dal.get_grouped(api_key, brands, psd.d_from, psd.d_to)
 
     # TODO fix atom with collect
     min_created, max_created = await sale_report_dal.get_min_max_created(api_key, (psd.d_from, psd.d_to))
@@ -61,7 +61,11 @@ async def report(
     if sale_report_rows:
         sale_report_dicts = map(dict, sale_report_rows)
         sale_reports_with_stock_balances = [d async for d in add_stock_balances(api_key, sale_report_dicts)]
-        sale_reports_final = list(add_sums(brands, sale_reports_with_stock_balances))
+
+        sale_reports_final = [
+            *get_sums(brands, sale_reports_with_stock_balances),
+            *sale_reports_with_stock_balances
+        ]
     else:
         sale_reports_final = []
 

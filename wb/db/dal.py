@@ -139,14 +139,15 @@ class SaleReportDAL(BaseDAL):
             )
         )
 
-    async def get_grouped(self, api_key: str, date_from: date, date_to: date):
+    async def get_grouped(self, api_key: str, brands: list[str], date_from: date, date_to: date):
         return await self._all(
             select(
                 *self._group_fields,
                 *self._group_aggregate_funcs
             ).filter(
                 SaleReport.api_key == api_key,
-                cast(SaleReport.created, Date).between(date_from, date_to)
+                cast(SaleReport.created, Date).between(date_from, date_to),
+                *(brands and [SaleReport.brand.in_(brands)] or [])
             ).group_by(
                 *self._group_fields
             ).order_by(*self._group_fields)

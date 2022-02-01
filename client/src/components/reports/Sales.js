@@ -15,6 +15,32 @@ function CSV(props) {
   )
 }
 
+function TotalMiniTable(props) {
+  let total = props.total;
+  return (
+    <Table variant="dark" size="sm" style={{fontSize: 10}}>
+      <tbody>
+        <tr>
+          <td>Перечислено от WB в руб.</td>
+          <td>{total.sum_sale}</td>
+        </tr>
+        <tr>
+          <td>Удержано WB за услуги в руб.</td>
+          <td>...</td>
+        </tr>
+        <tr>
+          <td>Продано шт.</td>
+          <td>{total.count_sale}</td>
+        </tr>
+        <tr>
+          <td>Возвраты шт.</td>
+          <td>{total.count_refund}</td>
+        </tr>
+      </tbody>
+    </Table>
+  )
+}
+
 function Sales(props) {
   let data = props.table.data;
 
@@ -24,7 +50,9 @@ function Sales(props) {
     return (<p>No data</p>)
   }
 
-  let headers = Object.keys(data[0]);
+  let total_row = data[0];
+
+  let headers = Object.keys(data[data.length - 1]);
   let thead = (
     <thead>
       <tr key={"header"}>
@@ -53,6 +81,7 @@ function Sales(props) {
   return (
     <>
       <h3>Отчёт:</h3>
+      <TotalMiniTable total={total_row} />
       <small className="text-size-small">Первая покупка в рамках отчёта: <pre>{props.dates.min}</pre></small>
       <small className="text-size-small">Последняя покупка в рамках отчёта: <pre>{props.dates.max}</pre></small>
       <CSV title={props.table.title} headers={headers} data={data}/>

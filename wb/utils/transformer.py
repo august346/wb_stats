@@ -88,7 +88,7 @@ class Transformer:
             raise e
 
 
-def add_sums(brands: list[str], rows: Iterable[dict]):
+def get_sums(brands: list[str], rows: Iterable[dict]):
     total_sum = defaultdict(Decimal)
     sums_brands = defaultdict(lambda: defaultdict(Decimal))
 
@@ -104,10 +104,7 @@ def add_sums(brands: list[str], rows: Iterable[dict]):
                 if brand in brands:
                     sums_brands[brand][field_key] += field_value
 
-        yield r
+    yield total_sum | dict(brand="__all__")
 
     for brand, sums in sums_brands.items():
         yield sums | dict(brand=brand)
-
-    yield total_sum | dict(brand="__all__")
-

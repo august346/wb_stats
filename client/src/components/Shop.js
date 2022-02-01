@@ -193,7 +193,7 @@ class RealShop extends React.Component {
               </div>
 
               <Form.Group className="m-2" controlId="formBasicBrands">
-                <Form.Label>Выберите бренды по которым отдельно посчитать суммы</Form.Label>
+                <Form.Label>Выберите бренды или оставьте пустым для общего отчёта</Form.Label>
                 <Multiselect
                   options={this.state.brands}
                   selectedValues={this.state.selectedBrands}
