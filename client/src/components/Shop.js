@@ -36,7 +36,7 @@ function History(props) {
     <div>
       <h5>История запрошенных отчётов:</h5>
       <ul>
-        {props.history.sale_reports.map((row, ind) => (
+        {props.history.sale_reports.length > 0 ? props.history.sale_reports.map((row, ind) => (
           <li
             className="wb-link"
             key={ind}
@@ -44,7 +44,7 @@ function History(props) {
             >
             {row.date_from} - {row.date_to} [{row.brands.length > 0 ? row.brands.join(' | ') : '...'}]
           </li>
-        ))}
+        )) : <li> --- </li>}
       </ul>
     </div>
   )
