@@ -248,7 +248,7 @@ class RealShop extends React.Component {
                   />
               </Form.Group>
             </Form>
-            <ReportButton isReady={!!this.state.dateFrom && !!this.state.dateTo} download={this.downloadReport} />
+            <ReportButton isReady={!!dateFrom && !!dateTo} download={this.downloadReport} />
           </div>
           {
             !!this.state.report && (
