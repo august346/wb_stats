@@ -55,6 +55,12 @@ class RealShop extends React.Component {
     constructor(props) {
       super(props);
 
+      let now = new Date();
+      now.setDate(0);
+      let prevMonthEnd = now.toISOString().split("T")[0];
+      now.setDate(1);
+      let prevMonthStart = now.toISOString().split("T")[0];
+
       this.rename = this.rename.bind(this);
       this.delete = this.delete.bind(this);
       this.downloadReport = this.downloadReport.bind(this);
@@ -68,8 +74,8 @@ class RealShop extends React.Component {
         brands: [],
         selectedBrands: [],
 
-        dateFrom: null,
-        dateTo: null,
+        dateFrom: prevMonthStart,
+        dateTo: prevMonthEnd,
         history: {sale_reports: null},
         report: null,
       }
@@ -204,15 +210,6 @@ class RealShop extends React.Component {
   }
 
   render() {
-    let now = new Date();
-    now.setDate(0);
-    let prevMonthEnd = now.toISOString().split("T")[0];
-    now.setDate(1);
-    let prevMonthStart = now.toISOString().split("T")[0];
-
-    let dateFrom = this.state.dateFrom || prevMonthStart;
-    let dateTo = this.state.dateTo || prevMonthEnd;
-
     return (
       <Tabs defaultActiveKey="sales-analitics" id="uncontrolled-tab-example" className="my-3">
         <Tab eventKey="sales-analitics" title="Аналитика продаж">
@@ -225,12 +222,12 @@ class RealShop extends React.Component {
               <div className="d-flex align-items-center">
                 <Form.Group className="m-2" controlId="formBasicFrom">
                   <Form.Label>С</Form.Label>
-                  <Form.Control name="dateFrom" type="date" value={dateFrom} onChange={this.handleInputChange} />
+                  <Form.Control name="dateFrom" type="date" value={this.state.dateFrom} onChange={this.handleInputChange} />
                 </Form.Group>
 
                 <Form.Group className="m-2" controlId="formBasicTo">
                   <Form.Label>По</Form.Label>
-                  <Form.Control name="dateTo" type="date" value={dateTo} onChange={this.handleInputChange} />
+                  <Form.Control name="dateTo" type="date" value={this.state.dateTo} onChange={this.handleInputChange} />
                 </Form.Group>
               </div>
 
@@ -248,7 +245,7 @@ class RealShop extends React.Component {
                   />
               </Form.Group>
             </Form>
-            <ReportButton isReady={!!dateFrom && !!dateTo} download={this.downloadReport} />
+            <ReportButton isReady={!!this.state.dateFrom && !!this.state.dateTo} download={this.downloadReport} />
           </div>
           {
             !!this.state.report && (
