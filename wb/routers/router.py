@@ -55,8 +55,8 @@ async def report(
 
     # TODO fix atom with collect
     min_created, max_created = await sale_report_dal.get_min_max_created(api_key, (psd.d_from, psd.d_to))
-    response.headers["X-Data-Min-Created"] = min_created and min_created.isoformat()
-    response.headers["X-Data-Max-Created"] = max_created and max_created.isoformat()
+    response.headers["X-Data-Min-Created"] = min_created and min_created.isoformat() or "-"
+    response.headers["X-Data-Max-Created"] = max_created and max_created.isoformat() or "-"
 
     if sale_report_rows:
         sale_report_dicts = map(dict, sale_report_rows)

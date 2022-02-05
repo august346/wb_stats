@@ -7,6 +7,7 @@ from db.dal import UserWbApiKeyDAL
 from db.models.wb_api_key import UserWbApiKey
 from dependencies import get_user_wb_api_key_dal, get_wb_service
 from sevices.wb import WbService
+from utils import redis
 
 router = APIRouter()
 
@@ -23,7 +24,10 @@ async def get(
         "id": api_key.wb_api_key_id,
         "name": api_key.name,
         "key": f"...{api_key.wb_api_key.key[-6:]}",
-        "brands": brands
+        "brands": brands,
+        "history": {
+            "sale_reports": await redis.History.get_sale_reports(wak_dal.user_id, wak_id)
+        }
     }
 
 
@@ -81,6 +85,8 @@ async def report(
         brands=brands
     )
 
+    history: list[dict] = await redis.History.add_sale_reports(wak_dal.user_id, wak_id, date_from, date_to, brands)
+
     response.headers.update(headers)
 
-    return data
+    return {'data': data, 'history': history}

@@ -39,6 +39,7 @@ services:
     depends_on:
       - wb
       - db
+      - redis
     networks:
       - backend
 

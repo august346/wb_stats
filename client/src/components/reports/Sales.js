@@ -3,6 +3,8 @@ import React from 'react';
 import { Button, Table } from 'react-bootstrap';
 import CsvDownloader from 'react-csv-downloader';
 
+import * as utils from '../../utils/utils.js';
+
 function CSV(props) {
   return (
     <CsvDownloader
@@ -18,11 +20,11 @@ function CSV(props) {
 function TotalMiniTable(props) {
   let total = props.total;
   return (
-    <Table variant="dark" size="sm" style={{fontSize: 10}}>
+    <Table className="mx-auto" variant="dark" size="sm" style={{fontSize: 10}}>
       <tbody>
         <tr>
           <td>Перечислено от WB в руб.</td>
-          <td>{total.sum_sale}</td>
+          <td>{utils.commaNumber(total.sum_sale)}</td>
         </tr>
         <tr>
           <td>Удержано WB за услуги в руб.</td>
@@ -30,11 +32,11 @@ function TotalMiniTable(props) {
         </tr>
         <tr>
           <td>Продано шт.</td>
-          <td>{total.count_sale}</td>
+          <td>{utils.commaNumber(total.count_sale)}</td>
         </tr>
         <tr>
           <td>Возвраты шт.</td>
-          <td>{total.count_refund}</td>
+          <td>{utils.commaNumber(total.count_refund)}</td>
         </tr>
       </tbody>
     </Table>
@@ -79,18 +81,18 @@ function Sales(props) {
 
 
   return (
-    <>
+    <div>
       <h3>Отчёт:</h3>
       <TotalMiniTable total={total_row} />
       <small className="text-size-small">Первая покупка в рамках отчёта: <pre>{props.dates.min}</pre></small>
       <small className="text-size-small">Последняя покупка в рамках отчёта: <pre>{props.dates.max}</pre></small>
       <CSV title={props.table.title} headers={headers} data={data}/>
-      <Table striped bordered hover size="sm" style={{fontSize: 10}}>
+      <Table striped bordered hover size="sm" responsive="lg" style={{fontSize: 10}}>
         <caption style={{captionSide: "top"}}>{props.table.title + ".csv"}</caption>
         {thead}
         {tbody}
       </Table>
-    </>
+    </div>
   );
 }
 

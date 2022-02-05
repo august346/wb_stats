@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     db_name: str = "api_gateway"
     postgres: str = os.environ.get("POSTGRES", "postgresql+asyncpg://postgres:postgres@localhost")
 
+    redis: str = os.environ.get("REDIS", "redis://localhost")
+
     debug: bool = False
 
     class Config:

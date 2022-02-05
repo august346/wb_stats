@@ -31,6 +31,25 @@ function ReportButton(props) {
   )
 }
 
+function History(props) {
+  return props.history && props.history.sale_reports && (
+    <div>
+      <h5>История запрошенных отчётов:</h5>
+      <ul>
+        {props.history.sale_reports.map((row, ind) => (
+          <li
+            className="wb-link"
+            key={ind}
+            onClick={() => props.buildSaleReport(row.date_from, row.date_to, row.brands)}
+            >
+            {row.date_from} - {row.date_to} [{row.brands.length > 0 ? row.brands.join(' | ') : '...'}]
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 
 class RealShop extends React.Component {
     constructor(props) {
@@ -39,6 +58,7 @@ class RealShop extends React.Component {
       this.rename = this.rename.bind(this);
       this.delete = this.delete.bind(this);
       this.downloadReport = this.downloadReport.bind(this);
+      this.buildReport = this.buildReport.bind(this);
       this.handleInputChange = this.handleInputChange.bind(this);
       this.setBrands = this.setBrands.bind(this);
 
@@ -50,6 +70,7 @@ class RealShop extends React.Component {
 
         dateFrom: null,
         dateTo: null,
+        history: {sale_reports: null},
         report: null,
       }
     }
@@ -64,7 +85,8 @@ class RealShop extends React.Component {
         this.setState({
           name: resp.data.name,
           id: resp.data.id,
-          brands: resp.data.brands.map(b => ({name: b}))
+          brands: resp.data.brands.map(b => ({name: b})),
+          history: resp.data.history
         })
       }
     ).catch(
@@ -120,10 +142,15 @@ class RealShop extends React.Component {
   }
 
   async downloadReport() {
-    let nowDate = (new Date()).toISOString().split("T")[0];
     let dateFrom = this.state.dateFrom;
     let dateTo = this.state.dateTo;
     let brands = this.state.selectedBrands.map(b => (b.name));
+
+    await this.buildReport(dateFrom, dateTo, brands)
+  }
+
+  async buildReport(dateFrom, dateTo, brands) {
+    let nowDate = (new Date()).toISOString().split("T")[0];
 
     if (dateFrom > dateTo) {
       alert("Дата начала не может быть больше Даты окончания");
@@ -133,19 +160,24 @@ class RealShop extends React.Component {
       return
     }
 
-
     await this.props.keyApi.aGetReport(this.state.id, dateFrom, dateTo, brands).then(
       (resp) => {
-        this.setState({report: {
-          dates: {
-            min: resp.headers["x-min-created"],
-            max: resp.headers["x-max-created"],
-          },
-          table: {
-            title: dateFrom + "___" + dateTo,
-            data: resp.data
+        this.setState({
+          history: {sale_reports: resp.data.history},
+          dateFrom: dateFrom,
+          dateTo: dateTo,
+          selectedBrands: brands.map(b => ({name: b})),
+          report: {
+            dates: {
+              min: resp.headers["x-min-created"],
+              max: resp.headers["x-max-created"],
+            },
+            table: {
+              title: dateFrom + "___" + dateTo,
+              data: resp.data.data
+            }
           }
-        }});
+        });
       }
     ).catch(
       (error) => {
@@ -172,23 +204,33 @@ class RealShop extends React.Component {
   }
 
   render() {
+    let now = new Date();
+    now.setDate(0);
+    let prevMonthEnd = now.toISOString().split("T")[0];
+    now.setDate(1);
+    let prevMonthStart = now.toISOString().split("T")[0];
+
+    let dateFrom = this.state.dateFrom || prevMonthStart;
+    let dateTo = this.state.dateTo || prevMonthEnd;
+
     return (
       <Tabs defaultActiveKey="sales-analitics" id="uncontrolled-tab-example" className="my-3">
         <Tab eventKey="sales-analitics" title="Аналитика продаж">
           <h2 className="m-4">{this.state.name}</h2>
           <Button variant="info" className="m-3" onClick={this.rename}>Переименовать</Button>{' '}
           <Button variant="danger" className="m-3" onClick={this.delete}>Удалить магазин</Button>{' '}
+          <History history={this.state.history} buildSaleReport={this.buildReport} />
           <div>
             <Form>
               <div className="d-flex align-items-center">
                 <Form.Group className="m-2" controlId="formBasicFrom">
                   <Form.Label>С</Form.Label>
-                  <Form.Control name="dateFrom" type="date" onChange={this.handleInputChange} />
+                  <Form.Control name="dateFrom" type="date" value={dateFrom} onChange={this.handleInputChange} />
                 </Form.Group>
 
                 <Form.Group className="m-2" controlId="formBasicTo">
                   <Form.Label>По</Form.Label>
-                  <Form.Control name="dateTo" type="date" onChange={this.handleInputChange} />
+                  <Form.Control name="dateTo" type="date" value={dateTo} onChange={this.handleInputChange} />
                 </Form.Group>
               </div>
 

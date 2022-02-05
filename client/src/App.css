@@ -1,0 +1,13 @@
+ul {
+    list-style-type: none;
+}
+
+.wb-link {
+  font-weight: bold;
+  color: #3a0078;
+  cursor: pointer;
+}
+
+.wb-link:hover {
+  color: #f96666
+}
