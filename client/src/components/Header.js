@@ -27,7 +27,7 @@ class Header extends React.Component {
     return (
       <Navbar bg="dark" variant="dark" expand="md">
         <Container>
-          <Navbar.Brand as={Link} to="/">WB Stats</Navbar.Brand>
+          <Navbar.Brand as={Link} to="/">NIa Analytics</Navbar.Brand>
           <Navbar.Toggle className="navbar-expand-sm" aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">

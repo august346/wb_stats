@@ -30,12 +30,21 @@ class SignInWithoutNavigate extends React.Component {
       email: null,
       password: null,
 
-      error: null,
+      errors: {},
     }
   }
 
   handleClose() {
-    this.setState({show: false});
+    this.setState(
+      {
+        show: false,
+
+        email: null,
+        password: null,
+
+        errors: {},
+      }
+    );
   }
 
   handleShow() {
@@ -43,10 +52,15 @@ class SignInWithoutNavigate extends React.Component {
   }
 
   handleInputChange(e) {
-    this.setState({[e.target.name]: e.target.value});
+    this.setState({[e.target.name]: e.target.value, errors: {}});
   }
 
   async onClick() {
+    if (this.state.email && !this.state.email.match(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/)) {
+      this.setState({errors: {email: "Невалидный email"}});
+      return ;
+    }
+
     await signIn(
       this.state.email,
       this.state.password
@@ -62,27 +76,18 @@ class SignInWithoutNavigate extends React.Component {
         let data = resp.data;
         if (resp.status === 401) {
           if (typeof data.detail === 'string') {
-            this.setState({error: data.detail})
+            this.setState({errors: {general: data.detail}});
           } else {
             console.log(0, resp.status, data, typeof data.detail, typeof data.detail === 'string');
           }
         } else {
           console.log(0, resp.status, data, typeof data.detail, typeof data.detail === 'string');
         }
-        return
       }
     )
   }
 
   render() {
-    let errors = {};
-    if (!!this.state.error) {
-      errors.general = this.state.error;
-    }
-    if (this.state.email && !this.state.email.match(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/)) {
-      errors.email = "Невалидный email";
-    }
-
     return (
       <>
         <Button variant="outline-primary" className="btn ml-auto" onClick={this.handleShow}>
@@ -95,16 +100,23 @@ class SignInWithoutNavigate extends React.Component {
           </Modal.Header>
           <Modal.Body>
           <Form>
-            {!!errors.general && (
+            {!!this.state.errors.general && (
               <Alert variant="danger">
-                {errors.general}
+                {this.state.errors.general}
               </Alert>
             )}
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email</Form.Label>
-              <Form.Control name="email" type="email" required placeholder="Enter email" onChange={this.handleInputChange} isInvalid={!!errors.email} />
+              <Form.Control
+                name="email"
+                type="email"
+                required
+                placeholder="Enter email"
+                onChange={this.handleInputChange}
+                isInvalid={!!this.state.errors.email}
+              />
               <Form.Control.Feedback type="invalid">
-                {errors.email}
+                {this.state.errors.email}
               </Form.Control.Feedback>
             </Form.Group>
 

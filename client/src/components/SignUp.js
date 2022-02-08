@@ -34,12 +34,22 @@ class SignUp extends React.Component {
       password: null,
       password_confirm: null,
 
-      error: null,
+      errors: {},
     }
   }
 
   handleClose() {
-    this.setState({show: false});
+    this.setState(
+      {
+        show: false,
+
+        email: null,
+        password: null,
+        password_confirm: null,
+
+        errors: {},
+      }
+    );
   }
 
   handleShow() {
@@ -47,10 +57,30 @@ class SignUp extends React.Component {
   }
 
   handleInputChange(e) {
-    this.setState({[e.target.name]: e.target.value});
+    this.setState({[e.target.name]: e.target.value, errors: {}});
   }
 
   async onClick(e) {
+    let errors = {};
+    if (!this.state.email) {
+      errors.email = "Не может быть пустым";
+    } else if (!this.state.email.match(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/)) {
+      errors.email = "Невалидный email";
+    }
+    if (!this.state.password) {
+      errors.password = "Не может быть пустым";
+    } else if (!this.state.password.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)) {
+      errors.password = "В пароле должны быть цифры и латинские буквы";
+    }
+    if (this.state.password !== this.state.password_confirm) {
+      errors.password_confirm = "Не совпадает";
+    }
+
+    if (Object.keys(errors).length !== 0) {
+      this.setState({errors})
+      return ;
+    }
+
     await signUp(
       this.state.email,
       this.state.password,
@@ -66,7 +96,7 @@ class SignUp extends React.Component {
         let data = resp.data;
         if (resp.status === 400) {
           if (typeof data.detail === 'string') {
-            this.setState({error: data.detail})
+            this.setState({errors: {general: data.detail}});
           } else {
             console.log(0, resp.status, data, typeof data.detail, typeof data.detail === 'string');
           }
@@ -79,24 +109,6 @@ class SignUp extends React.Component {
   }
 
   render() {
-    let errors = {};
-    if (!!this.state.error) {
-      errors.general = this.state.error;
-    }
-    if (!this.state.email) {
-      errors.email = "Не может быть пустым"
-    } else if (!this.state.email.match(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/)) {
-      errors.email = "Невалидный email"
-    }
-    if (!this.state.password) {
-      errors.password = "Не может быть пустым"
-    } else if (!this.state.password.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)) {
-      errors.password = "В пароле должны быть цифры и латинские буквы"
-    }
-    if (this.state.password !== this.state.password_confirm) {
-      errors.password_confirm = "Не совпадает"
-    }
-
     return (
       <>
         <Button variant="primary" className="mx-2" onClick={this.handleShow}>
@@ -109,34 +121,50 @@ class SignUp extends React.Component {
           </Modal.Header>
           <Modal.Body>
           <Form>
-            {!!errors.general && (
+            {!!this.state.errors.general && (
               <Alert variant="danger">
-                {errors.general}
+                {this.state.errors.general}
               </Alert>
             )}
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email</Form.Label>
-              <Form.Control name="email" type="email" required placeholder="Enter email" onChange={this.handleInputChange} isInvalid={!!errors.email} />
+              <Form.Control
+                name="email"
+                type="email"
+                required
+                placeholder="Enter email"
+                onChange={this.handleInputChange}
+                isInvalid={!!this.state.errors.email} />
               <Form.Text className="text-muted">
                 Мы не передаём ваш email сторонним сервисам
               </Form.Text>
               <Form.Control.Feedback type="invalid">
-                {errors.email}
+                {this.state.errors.email}
               </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
               <Form.Label>Пароль</Form.Label>
-              <Form.Control name="password" type="password" required placeholder="Password" onChange={this.handleInputChange} isInvalid={!!errors.password} />
+              <Form.Control
+                name="password"
+                type="password"
+                required placeholder="Password"
+                onChange={this.handleInputChange}
+                isInvalid={!!this.state.errors.password} />
               <Form.Control.Feedback type="invalid">
-                {errors.password}
+                {this.state.errors.password}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword2">
               <Form.Label>Подтверждение паролья</Form.Label>
-              <Form.Control name="password_confirm" type="password" placeholder="Password" onChange={this.handleInputChange} isInvalid={!!errors.password_confirm} />
+              <Form.Control
+                name="password_confirm"
+                type="password"
+                placeholder="Password"
+                onChange={this.handleInputChange}
+                isInvalid={!!this.state.errors.password_confirm} />
               <Form.Control.Feedback type="invalid">
-                {errors.password_confirm}
+                {this.state.errors.password_confirm}
               </Form.Control.Feedback>
             </Form.Group>
           </Form>
